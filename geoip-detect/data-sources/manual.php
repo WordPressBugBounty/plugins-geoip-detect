@@ -1,4 +1,6 @@
 <?php
+namespace YellowTree\GeoipDetect\DataSources\Manual;
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 /*
 Copyright 2013-2023 Yellow Tree, Siegen, Germany
 Author: Benjamin Pick (wp-geoip-detect| |posteo.de)
@@ -18,7 +20,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-namespace YellowTree\GeoipDetect\DataSources\Manual;
 
 use YellowTree\GeoipDetect\DataSources\AbstractDataSource;
 
@@ -83,10 +84,10 @@ class ManualDataSource extends AbstractDataSource {
 		$label_key = __('License key:', 'geoip-detect');
 
 
-		$html = <<<HTML
-$label_id <input type="number" autocomplete="off" name="options_auto[license_id]" value="$id" /><br />
-$label_key <input type="text" autocomplete="off" size="20" name="options_auto[license_key]" value="$key" /><br />
-HTML;
+		$html = '
+' . $label_id . ' <input type="number" autocomplete="off" name="options_auto[license_id]" value="' . $id . '" /><br />
+' . $label_key . ' <input type="text" autocomplete="off" size="20" name="options_auto[license_key]" value="' . $key . '" /><br />
+';
 		return $html;
 	}
 
@@ -139,6 +140,9 @@ HTML;
 	public function validateApiKey($key) {
 		$message = '';
 		$key = trim($key);
+		if (empty($key)) {
+			return true; // Empty key is allowed, because maybe the user just wants to remove the key and stop using the automatic update. So only validate if there is actually a value.
+		}
 		if (mb_strlen($key) < 16) {
 			$message = __('The license key is at least 16-char long. Are you sure this is the right key?', 'geoip-detect');
 			if (mb_strlen($key) < 16) {
@@ -172,11 +176,11 @@ HTML;
 
 		$label = __('Filepath to mmdb-file:', 'geoip-detect');
 		$desc = __('e.g. wp-content/uploads/GeoLite2-Country.mmdb or absolute filepath', 'geoip-detect');
-		$html .= <<<HTML
-		<p>$label <input type="text" size="40" name="options_manual[manual_file]" value="$manual_file" /></p>
-		<span class="detail-box">$desc $current_value</span>
+		$html .= '
+		<p>' . $label . ' <input type="text" size="40" name="options_manual[manual_file]" value="' . $manual_file . '" /></p>
+		<span class="detail-box">' . $desc . ' ' . $current_value . '</span>
 		<br />
-HTML;
+';
 
 		return $html;
 	}
@@ -299,9 +303,6 @@ add_filter('geoip_detect_source_get_status_HTML_maxmind', function($html) {
 		$sameVersion = true;
 		foreach($maxmind->checksumResult as $file => $result) {
 			$file = $maxmind->makePathRelative($file);
-			if (GEOIP_DETECT_DEBUG) {
-				var_dump($file);
-			}
 			$files .= '&nbsp;&nbsp;-&nbsp;&nbsp;' . $file . ' (' . ($result ? 'same version' : 'different version' ).  ')<br>';
 			$sameVersion = $sameVersion && $result;
 		}

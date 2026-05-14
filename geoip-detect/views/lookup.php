@@ -1,5 +1,8 @@
 <?php
 use YellowTree\GeoipDetect\DataSources\DataSourceRegistry;
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+
+
 $date_format = get_option('date_format') . ' ' . get_option('time_format');
 
 $registry = DataSourceRegistry::getInstance();
@@ -290,7 +293,7 @@ function var_export_short($data, $return=true)
 	<p class="short"><a href="#" onclick="geoip_properties_toggle('all', 'short'); return false;"><?php esc_html_e('Show all available properties', 'geoip-detect') ?></a></p>
 	<p><?php esc_html_e('(More properties might be available for other IPs and with other data sources.)', 'geoip-detect'); ?></p>
 
-	<?php if (GEOIP_DETECT_DEBUG) { var_dump($data); } ?>
+	<?php if (GEOIP_DETECT_DEBUG) { echo esc_html(json_encode($data, JSON_UNESCAPED_UNICODE)); } ?>
 		<?php elseif ($ip_lookup_result === 0 || is_null($ip_lookup_result)) : ?>
 			<p>
 				<?php esc_html_e('No information found about this IP.', 'geoip-detect')?>

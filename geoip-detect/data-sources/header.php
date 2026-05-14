@@ -1,4 +1,7 @@
 <?php
+
+namespace YellowTree\GeoipDetect\DataSources\Header;
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 /*
 Copyright 2013-2023 Yellow Tree, Siegen, Germany
 Author: Benjamin Pick (wp-geoip-detect| |posteo.de)
@@ -18,7 +21,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-namespace YellowTree\GeoipDetect\DataSources\Header;
+
 
 use YellowTree\GeoipDetect\DataSources\AbstractDataSource;
 
@@ -115,14 +118,14 @@ class HeaderDataSource extends AbstractDataSource {
 
 		$label = __('Which Hosting Provider:', 'geoip-detect');
 		$label_other = __('Custom', 'geoip-detect');
-		$html = <<<HTML
-		<p>$label<br> 
-			<label><input type="radio" name="options_header[provider]" value="cloudflare" $checked_cloudflare /> Cloudflare</label>
-			<label><input type="radio" name="options_header[provider]" value="aws" $checked_aws /> Amazon AWS CloudFront</label>
-			<label><input type="radio" name="options_header[provider]" value="other" $checked_other /> $label_other</label>
+		$html = '
+		<p>' . $label . '<br> 
+			<label><input type="radio" name="options_header[provider]" value="cloudflare" ' . $checked_cloudflare . ' /> Cloudflare</label>
+			<label><input type="radio" name="options_header[provider]" value="aws" ' . $checked_aws . ' /> Amazon AWS CloudFront</label>
+			<label><input type="radio" name="options_header[provider]" value="other" ' . $checked_other . ' /> ' . $label_other . '</label>
 	    </p>
 		<br />	
-HTML;
+';
 		
 		return $html;
 	}

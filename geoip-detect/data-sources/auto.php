@@ -1,4 +1,6 @@
 <?php
+namespace YellowTree\GeoipDetect\DataSources\Auto;
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 /*
 Copyright 2013-2023 Yellow Tree, Siegen, Germany
 Author: Benjamin Pick (wp-geoip-detect| |posteo.de)
@@ -18,7 +20,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-namespace YellowTree\GeoipDetect\DataSources\Auto;
 
 use YellowTree\GeoipDetect\DataSources\Manual\ManualDataSource;
 use YellowTree\GeoipDetect\Logger;
@@ -59,7 +60,7 @@ class AutoDataSource extends ManualDataSource
 
 	protected function updateHTML() {
 		$html = $error = '';
-		$disabled = '';
+		$disabled = false;
 
 		$keyAvailable = !! get_option('geoip-detect-auto_license_key', '');
 		if (!$keyAvailable) {
@@ -67,7 +68,7 @@ class AutoDataSource extends ManualDataSource
 				__('Maxmind Automatic Download only works with a given license key.', 'geoip-detect') .
 				'<p>' . sprintf(__('You can signup for a free Maxmind-Account here: <a href="%s" target="_blank">Sign Up</a>.', 'geoip-detect'), 'https://www.maxmind.com/en/geolite2/signup') . '<br>' .
 				__('After logging in, generate a license key and copy the Account ID and the key to the options below.', 'geoip-detect') . '</p>';
-			$disabled = ' disabled="disabled"';
+			$disabled = true;
 		} else {
 			$keyValidationMessage = $this->validateApiKey(get_option('geoip-detect-auto_license_key', ''));
 			if ($keyValidationMessage !== true) {
@@ -81,17 +82,14 @@ class AutoDataSource extends ManualDataSource
 			}
 		}
 
-
-		$text_update = __('Update now', 'geoip-detect');
-		$nonce_field = wp_nonce_field( 'geoip_detect_update' );
 		if (current_user_can('manage_options')) {
-			$html .= <<<HTML
+			$html .= '
 <form method="post" action="options-general.php?page=geoip-detect%2Fgeoip-detect.php">
-		$nonce_field
+		' . wp_nonce_field('geoip_detect_update') . '
 		<input type="hidden" name="action" value="update" />
-		<input type="submit" class="button button-secondary" value="$text_update" $disabled />
+		<input type="submit" class="button button-secondary" value="' . __('Update now', 'geoip-detect') . '" ' . ($disabled ? 'disabled="disabled"' : '') . ' />
 </form>
-HTML;
+';
 		}
 
 		if ($error) {
@@ -152,7 +150,7 @@ HTML;
 		$headers = [];
 		$headers['User-Agent'] = GEOIP_DETECT_USER_AGENT;
 		if ($modified) {
-			$headers['If-Modified-Since'] = date('r', $modified);
+			$headers['If-Modified-Since'] = gmdate('r', $modified);
 		}
 
 		$response = wp_safe_remote_get( $url, [ 'timeout' => 300, 'stream' => true, 'filename' => $tmpfname, 'headers' => $headers, 'redirection' => 5 ] );
@@ -227,13 +225,6 @@ HTML;
 
 	// Ungzip File
 	protected function unpackArchive($downloadedFilename, $outFile) {
-		if (!is_readable($downloadedFilename) || !is_file($downloadedFilename))
-			return __('Downloaded file could not be opened for reading.', 'geoip-detect');
-		if (!\is_writable(dirname($outFile)))
-			return sprintf(__('Database could not be written (%s).', 'geoip-detect'), $outFile);
-
-		$outDir = get_temp_dir() . 'geoip-detect/';
-
 		global $wp_filesystem;
 		if (! $wp_filesystem) {
 			$ret = \WP_Filesystem(false, get_temp_dir(), true /* allow group/world-writeable folder */);
@@ -241,11 +232,19 @@ HTML;
 				return __('WP Filesystem could not be initialized (does not support FTP credential access. Can you upload files to the media library?).', 'geoip-detect');
 			}
 		}
-		if (\is_dir($outDir)) {
+
+		if (!$wp_filesystem->is_readable($downloadedFilename) || !$wp_filesystem->is_file($downloadedFilename))
+			return __('Downloaded file could not be opened for reading.', 'geoip-detect');
+		if (!$wp_filesystem->is_writable(dirname($outFile)))
+			return sprintf(__('Database could not be written (%s).', 'geoip-detect'), $outFile);
+
+		$outDir = get_temp_dir() . 'geoip-detect/';
+
+		if ($wp_filesystem->is_dir($outDir)) {
 			$wp_filesystem->rmdir($outDir, true);
 		}
 
-		mkdir($outDir);
+		$wp_filesystem->mkdir($outDir);
 
 		try {
 			$phar = new \PharData( $downloadedFilename );
@@ -267,10 +266,10 @@ HTML;
 			}
 		}
 
-		if (!\is_readable($inFile) || !\is_file($inFile))
+		if (!$wp_filesystem->is_readable($inFile) || !$wp_filesystem->is_file($inFile))
 			return __('Downloaded file could not be opened for reading.', 'geoip-detect');
 	
-		$ret = copy($inFile, $outFile);
+		$ret = $wp_filesystem->copy($inFile, $outFile);
 		if (!$ret)
 			return sprintf(__('Downloaded file could not write or overwrite %s.', 'geoip-detect'), $outFile);
 

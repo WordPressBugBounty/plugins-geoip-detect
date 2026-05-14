@@ -1,4 +1,5 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 /*
 Copyright 2013-2023 Yellow Tree, Siegen, Germany
 Author: Benjamin Pick (wp-geoip-detect| |posteo.de)
@@ -590,5 +591,5 @@ function geoip_detect_format_localtime($timestamp = -1) : string {
 	
 	$format = get_option('date_format') . ' '. get_option('time_format');
 
-	return get_date_from_gmt ( date( 'Y-m-d H:i:s', $timestamp ),  $format);
+	return wp_date($format, $timestamp);
 }

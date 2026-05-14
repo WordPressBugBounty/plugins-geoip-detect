@@ -1,4 +1,6 @@
 <?php
+namespace YellowTree\GeoipDetect\DataSources\Ipstack;
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 /*
 Copyright 2013-2023 Yellow Tree, Siegen, Germany
 Author: Benjamin Pick (wp-geoip-detect| |posteo.de)
@@ -18,7 +20,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-namespace YellowTree\GeoipDetect\DataSources\Ipstack;
 
 use YellowTree\GeoipDetect\DataSources\AbstractDataSource;
 
@@ -204,10 +205,10 @@ class IpstackSource extends AbstractDataSource {
 
         $key = esc_attr($this->params['key']);
 
-        $html = <<<HTML
-$label_key <input type="text" autocomplete="off" size="20" name="options_ipstack[key]" value="$key" /><br />
-$label_ssl <select name="options_ipstack[ssl]">
-HTML;
+        $html = '
+' . $label_key . ' <input type="text" autocomplete="off" size="20" name="options_ipstack[key]" value="' . $key . '" /><br />
+' . $label_ssl . ' <select name="options_ipstack[ssl]">
+';
         $html .= '<option value="0" ' . (!$this->params['ssl'] ? ' selected="selected"' : '') . '">' . __('HTTP (without encryption, not GDPR-compatible)', 'geoip-detect') . '</option>';
         $html .= '<option value="1" ' . ($this->params['ssl'] ? ' selected="selected"' : '') . '">' . __('HTTPS (with encryption - paid plans only)', 'geoip-detect') . '</option>';
         $html .= '</select>';

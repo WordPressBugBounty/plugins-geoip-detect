@@ -1,4 +1,6 @@
 <?php
+namespace YellowTree\GeoipDetect\DataSources\Fastah;
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 /*
 Copyright 2013-2023 Yellow Tree, Siegen, Germany
 Author: Benjamin Pick (wp-geoip-detect| |posteo.de)
@@ -17,7 +19,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-namespace YellowTree\GeoipDetect\DataSources\Fastah;
 
 use YellowTree\GeoipDetect\DataSources\AbstractDataSource;
 
@@ -200,7 +201,7 @@ class FastahSource extends AbstractDataSource {
     }
 
 	public function getId() { return 'fastah'; }
-	public function getLabel() { return __('Fastah Web API <sup><em>beta</em></sup>', 'geoip-detect'); }
+	public function getLabel() { return __('Fastah Web API', 'geoip-detect'); }
 
 	public function getDescriptionHTML() { return __('Commercial, with enterprise-friendly support and billing. <a href="https://aws.amazon.com/marketplace/pp/prodview-k5gjowexrefl2" target="_blank">Sign-up on AWS Marketplace</a>. <a href="https://docs.getfastah.com/docs/quick-start" target="_blank">API Documentation</a>', 'geoip-detect'); }
 	public function getStatusInformationHTML() { 
@@ -229,11 +230,11 @@ class FastahSource extends AbstractDataSource {
 
         $key = esc_attr($this->params['key']);
 
-        $html = <<<HTML
-$label_key <input type="text" autocomplete="off" size="20" name="options_fastah[key]" value="$key" /> <br />
+        $html = '
+' . $label_key . ' <input type="text" autocomplete="off" size="20" name="options_fastah[key]" value="' . $key . '" /> <br />
 <a href="https://aws.amazon.com/marketplace/pp/prodview-k5gjowexrefl2" target="_blank">Sign-up for a 30-day trial key</a>, <a href="https://console.api.getfastah.com" target="_blank">API usage dashboard</a><br><br>
-$label_http2 <select name="options_fastah[http2]">
-HTML;
+' . $label_http2 . ' <select name="options_fastah[http2]">
+';
         $html .= '<option value="0" ' . (!$this->params['http2'] ? ' selected="selected"' : '') . '">' . __('HTTP/2 is OFF (slower, but more compatible with older PHP versions)', 'geoip-detect') . '</option>';
         $html .= '<option value="1" ' . ($this->params['http2'] ? ' selected="selected"' : '') . '">' . __('HTTP/2 is ON (faster performance)', 'geoip-detect') . '</option>';
         $html .= '</select>';
