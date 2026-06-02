@@ -4,7 +4,7 @@ Tags: geolocation, locator, geoip, maxmind, ipstack
 Requires at least: 5.0
 Tested up to: 7.0
 Requires PHP: 7.2.5
-Stable tag: 5.6.2
+Stable tag: 5.6.3
 License: GPLv3 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=BSYUZHS8FH3CL
@@ -137,6 +137,9 @@ When using the default datasource "hostip.info", the region code (i.e. CA) is no
 If you are using AJAX mode, please read the changelog.
 
 == Changelog ==
+
+= 5.6.3 =
+* FIX: Compatibility with Wordpress 7.0 (Command Palette)
 
 = 5.6.2 =
 * UI: Showing dates now respect the wordpress timezone setting
